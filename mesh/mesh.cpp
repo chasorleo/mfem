@@ -14943,12 +14943,12 @@ void GeometricFactors::Compute(const GridFunction &nodes,
                         Device::GetDeviceMemoryType();
    if (computed_factors & GeometricFactors::COORDINATES)
    {
-      X.SetSize(vdim*NQ*NE, my_d_mt); // NQ x SDIM x NE
+      X.SetSize((int64_t)vdim*NQ*NE, my_d_mt); // NQ x SDIM x NE
       eval_flags |= QuadratureInterpolator::VALUES;
    }
    if (computed_factors & GeometricFactors::JACOBIANS)
    {
-      J.SetSize(dim*vdim*NQ*NE, my_d_mt); // NQ x SDIM x DIM x NE
+      J.SetSize((int64_t)dim*vdim*NQ*NE, my_d_mt); // NQ x SDIM x DIM x NE
       eval_flags |= QuadratureInterpolator::DERIVATIVES;
    }
    if (computed_factors & GeometricFactors::DETERMINANTS)

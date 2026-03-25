@@ -24,13 +24,13 @@ class TensorInd
 {
 public:
    MFEM_HOST_DEVICE
-   static inline int result(const int* sizes, T first, Args... args)
+   static inline long int result(const int* sizes, T first, Args... args)
    {
 #if !(defined(MFEM_USE_CUDA) || defined(MFEM_USE_HIP))
       MFEM_ASSERT(first<sizes[N-1],"Trying to access out of boundary.");
 #endif
-      return static_cast<int>(first + sizes[N - 1] * TensorInd < N + 1, Dim, Args... >
-                              ::result(sizes, args...));
+      return static_cast<long int>(first) + static_cast<long int>(sizes[N - 1]) * TensorInd < N + 1, Dim, Args... >
+                              ::result(sizes, args...);
    }
 };
 
@@ -40,13 +40,13 @@ class TensorInd<Dim, Dim, T, Args...>
 {
 public:
    MFEM_HOST_DEVICE
-   static inline int result(const int* sizes, T first, Args... args)
+   static inline long int result(const int* sizes, T first, Args... args)
    {
 #if !(defined(MFEM_USE_CUDA) || defined(MFEM_USE_HIP))
       MFEM_ASSERT(first<static_cast<T>(sizes[Dim-1]),
                   "Trying to access out of boundary.");
 #endif
-      return static_cast<int>(first);
+      return static_cast<long int>(first);
    }
 };
 
@@ -57,10 +57,10 @@ class Init
 {
 public:
    MFEM_HOST_DEVICE
-   static inline int result(int* sizes, T first, Args... args)
+   static inline long int result(int* sizes, T first, Args... args)
    {
       sizes[N - 1] = first;
-      return first * Init < N + 1, Dim, Args... >::result(sizes, args...);
+      return static_cast<long int>(first) * Init < N + 1, Dim, Args... >::result(sizes, args...);
    }
 };
 
@@ -70,10 +70,10 @@ class Init<Dim, Dim, T, Args...>
 {
 public:
    MFEM_HOST_DEVICE
-   static inline int result(int* sizes, T first, Args... args)
+   static inline long int result(int* sizes, T first, Args... args)
    {
       sizes[Dim - 1] = first;
-      return first;
+      return static_cast<long int>(first);
    }
 };
 
@@ -83,7 +83,7 @@ template<int Dim, typename Scalar = real_t>
 class DeviceTensor
 {
 protected:
-   int capacity;
+   long int capacity;
    Scalar *data;
    int sizes[Dim];
 
@@ -118,7 +118,7 @@ public:
    Scalar& operator()(Args... args) const
    {
       static_assert(sizeof...(args) == Dim, "Wrong number of arguments");
-      return data[ TensorInd<1, Dim, Args...>::result(sizes, args...) ];
+      return data[ (long int)TensorInd<1, Dim, Args...>::result(sizes, args...) ];
    }
 
    /// Subscript operator where the tensor is viewed as a 1D array.

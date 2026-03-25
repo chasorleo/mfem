@@ -791,7 +791,7 @@ inline void Array<T>::Swap(Array &other)
 template <class T>
 inline void Array<T>::GrowSize(int minsize)
 {
-   const int nsize = std::max(minsize, 2 * data.Capacity());
+   const int nsize = std::max(minsize, 2 * (int)data.Capacity());
    Memory<T> p(nsize, data.GetMemoryType());
    p.CopyFrom(data, size);
    p.UseDevice(data.UseDevice());

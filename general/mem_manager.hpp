@@ -236,7 +236,7 @@ public:
    /// Allocate host memory for @a size entries.
    /** The allocation uses the current host memory type returned by
        MemoryManager::GetHostMemoryType(). */
-   explicit Memory(int size) { New(size); }
+   explicit Memory(int64_t size) { New(size); }
 
    /// Creates a new empty Memory object with host MemoryType @a mt.
    explicit Memory(MemoryType mt) { Reset(mt); }
@@ -245,19 +245,19 @@ public:
        @a mt. */
    /** The newly allocated memory is not initialized, however the given
        MemoryType is still set as valid. */
-   Memory(int size, MemoryType mt) { New(size, mt); }
+   Memory(int64_t size, MemoryType mt) { New(size, mt); }
 
    /** @brief Allocate memory for @a size entries with the given host MemoryType
        @a h_mt and device MemoryType @a d_mt. */
    /** The newly allocated memory is not initialized. The host pointer is set as
        valid. */
-   Memory(int size, MemoryType h_mt, MemoryType d_mt) { New(size, h_mt, d_mt); }
+   Memory(int64_t size, MemoryType h_mt, MemoryType d_mt) { New(size, h_mt, d_mt); }
 
    /** @brief Wrap an externally allocated host pointer, @a ptr with the current
        host memory type returned by MemoryManager::GetHostMemoryType(). */
    /** The parameter @a own determines whether @a ptr will be deleted when the
        method Delete() is called. */
-   explicit Memory(T *ptr, int size, bool own) { Wrap(ptr, size, own); }
+   explicit Memory(T *ptr, int64_t size, bool own) { Wrap(ptr, size, own); }
 
    /// Wrap an externally allocated pointer, @a ptr, of the given MemoryType.
    /** The new memory object will have the given MemoryType set as valid.
@@ -267,7 +267,7 @@ public:
 
        The parameter @a own determines whether @a ptr will be deleted when the
        method Delete() is called. */
-   Memory(T *ptr, int size, MemoryType mt, bool own)
+   Memory(T *ptr, int64_t size, MemoryType mt, bool own)
    { Wrap(ptr, size, mt, own); }
 
    /** @brief Alias constructor. Create a Memory object that points inside the
@@ -339,7 +339,7 @@ public:
    /** @brief Allocate host memory for @a size entries with the current host
        memory type returned by MemoryManager::GetHostMemoryType(). */
    /** @note The current memory is NOT deleted by this method. */
-   inline void New(int size);
+   inline void New(int64_t size);
 
    /// Allocate memory for @a size entries with the given MemoryType.
    /** The newly allocated memory is not initialized, however the given
@@ -353,7 +353,7 @@ public:
        to be the dual of @a mt, see MemoryManager::GetDualMemoryType().
 
        @note The current memory is NOT deleted by this method. */
-   inline void New(int size, MemoryType mt);
+   inline void New(int64_t size, MemoryType mt);
 
    /** @brief Allocate memory for @a size entries with the given host MemoryType
        @a h_mt and device MemoryType @a d_mt. */
@@ -361,7 +361,7 @@ public:
        valid.
 
        @note The current memory is NOT deleted by this method. */
-   inline void New(int size, MemoryType h_mt, MemoryType d_mt);
+   inline void New(int64_t size, MemoryType h_mt, MemoryType d_mt);
 
    /** @brief Wrap an externally allocated host pointer, @a ptr with the current
        host memory type returned by MemoryManager::GetHostMemoryType(). */
@@ -369,7 +369,7 @@ public:
        method Delete() is called.
 
        @note The current memory is NOT deleted by this method. */
-   inline void Wrap(T *ptr, int size, bool own);
+   inline void Wrap(T *ptr, int64_t size, bool own);
 
    /// Wrap an externally allocated pointer, @a ptr, of the given MemoryType.
    /** The new memory object will have the given MemoryType set as valid.
@@ -381,7 +381,7 @@ public:
        method Delete() is called.
 
        @note The current memory is NOT deleted by this method. */
-   inline void Wrap(T *ptr, int size, MemoryType mt, bool own);
+   inline void Wrap(T *ptr, int64_t size, MemoryType mt, bool own);
 
    /** Wrap an externally pair of allocated pointers, @a h_ptr and @a d_ptr,
        of the given host MemoryType @a h_mt. */
@@ -956,7 +956,7 @@ inline void Memory<T>::Reset(MemoryType host_mt)
 }
 
 template <typename T>
-inline void Memory<T>::New(int size)
+inline void Memory<T>::New(int64_t size)
 {
    capacity = size;
    flags = OWNS_HOST | VALID_HOST;
@@ -966,7 +966,7 @@ inline void Memory<T>::New(int size)
 }
 
 template <typename T>
-inline void Memory<T>::New(int size, MemoryType mt)
+inline void Memory<T>::New(int64_t size, MemoryType mt)
 {
    capacity = size;
    const size_t bytes = size*sizeof(T);
@@ -978,7 +978,7 @@ inline void Memory<T>::New(int size, MemoryType mt)
 }
 
 template <typename T>
-inline void Memory<T>::New(int size, MemoryType host_mt, MemoryType device_mt)
+inline void Memory<T>::New(int64_t size, MemoryType host_mt, MemoryType device_mt)
 {
    capacity = size;
    const size_t bytes = size*sizeof(T);
@@ -989,7 +989,7 @@ inline void Memory<T>::New(int size, MemoryType host_mt, MemoryType device_mt)
 }
 
 template <typename T>
-inline void Memory<T>::Wrap(T *ptr, int size, bool own)
+inline void Memory<T>::Wrap(T *ptr, int64_t size, bool own)
 {
    h_ptr = ptr;
    capacity = size;
@@ -1011,7 +1011,7 @@ inline void Memory<T>::Wrap(T *ptr, int size, bool own)
 }
 
 template <typename T>
-inline void Memory<T>::Wrap(T *ptr, int size, MemoryType mt, bool own)
+inline void Memory<T>::Wrap(T *ptr, int64_t size, MemoryType mt, bool own)
 {
    capacity = size;
    if (IsHostMemory(mt))

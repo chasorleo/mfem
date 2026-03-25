@@ -83,7 +83,7 @@ class Vector
 protected:
 
    Memory<real_t> data;
-   int size;
+   int64_t size;
 
 public:
 
@@ -99,7 +99,7 @@ public:
 
    /// @brief Creates vector of size s.
    /// @warning Entries are not initialized to zero!
-   explicit Vector(int s);
+   explicit Vector(int64_t s);
 
    /// Creates a vector referencing an array of doubles, owned by someone else.
    /** The pointer @a data_ can be NULL. The data array can be replaced later
@@ -113,12 +113,12 @@ public:
       : data(base.data, base_offset, size_), size(size_) { }
 
    /// Create a Vector of size @a size_ using MemoryType @a mt.
-   Vector(int size_, MemoryType mt)
+   Vector(int64_t size_, MemoryType mt)
       : data(size_, mt), size(size_) { }
 
    /** @brief Create a Vector of size @a size_ using host MemoryType @a h_mt and
        device MemoryType @a d_mt. */
-   Vector(int size_, MemoryType h_mt, MemoryType d_mt)
+   Vector(int64_t size_, MemoryType h_mt, MemoryType d_mt)
       : data(size_, h_mt, d_mt), size(size_) { }
 
    /// Create a vector from a statically sized C-style array of convertible type
@@ -164,13 +164,13 @@ public:
        @warning In the second case above (new size greater than current one),
        the vector will allocate new data array, even if it did not own the
        original data! Also, new entries are not initialized! */
-   void SetSize(int s);
+   void SetSize(int64_t s);
 
    /// Resize the vector to size @a s using MemoryType @a mt.
-   void SetSize(int s, MemoryType mt);
+   void SetSize(int64_t s, MemoryType mt);
 
    /// Resize the vector to size @a s using the MemoryType of @a v.
-   void SetSize(int s, const Vector &v) { SetSize(s, v.GetMemory().GetMemoryType()); }
+   void SetSize(int64_t s, const Vector &v) { SetSize(s, v.GetMemory().GetMemoryType()); }
 
    /// Update \ref Capacity() to @a res (if less than current), keeping existing entries.
    void Reserve(int res);
@@ -231,7 +231,7 @@ public:
    { data.DeleteDevice(copy_to_host); }
 
    /// Returns the size of the vector.
-   inline int Size() const { return size; }
+   inline int Size() const { return static_cast<int>(size); }
 
    /// Return the size of the currently allocated data array.
    /** It is always true that Capacity() >= Size(). */
@@ -571,7 +571,7 @@ inline int CheckFinite(const real_t *v, const int n)
    return bad;
 }
 
-inline Vector::Vector(int s)
+inline Vector::Vector(int64_t s)
 {
    MFEM_ASSERT(s>=0,"Unexpected negative size.");
    size = s;
@@ -581,7 +581,7 @@ inline Vector::Vector(int s)
    }
 }
 
-inline void Vector::SetSize(int s)
+inline void Vector::SetSize(int64_t s)
 {
    if (s == size)
    {
@@ -601,7 +601,7 @@ inline void Vector::SetSize(int s)
    data.UseDevice(use_dev);
 }
 
-inline void Vector::SetSize(int s, MemoryType mt)
+inline void Vector::SetSize(int64_t s, MemoryType mt)
 {
    if (mt == data.GetMemoryType())
    {

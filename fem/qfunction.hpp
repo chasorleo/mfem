@@ -39,13 +39,13 @@ public:
        QuadratureSpaceBase.
        @note The Vector data is not initialized. */
    QuadratureFunction(QuadratureSpaceBase &qspace_, int vdim_ = 1)
-      : Vector(vdim_*qspace_.GetSize()),
+      : Vector((int64_t)vdim_*qspace_.GetSize()),
         qspace(&qspace_), own_qspace(false), vdim(vdim_)
    { UseDevice(true); }
 
    /// Same as above but specify the device memory type
    QuadratureFunction(QuadratureSpaceBase &qspace_,  MemoryType mt, int vdim_ = 1)
-      : Vector(vdim_*qspace_.GetSize(), mt),
+      : Vector((int64_t)vdim_*qspace_.GetSize(), mt),
         qspace(&qspace_), own_qspace(false), vdim(vdim_)
    { UseDevice(true); }
 
@@ -68,7 +68,7 @@ public:
        @note @a qf_data must be a valid **host** pointer (see the constructor
        Vector::Vector(double *, int)). */
    QuadratureFunction(QuadratureSpaceBase *qspace_, real_t *qf_data, int vdim_ = 1)
-      : Vector(qf_data, vdim_*qspace_->GetSize()),
+      : Vector(qf_data, (int64_t)vdim_*qspace_->GetSize()),
         qspace(qspace_), own_qspace(false), vdim(vdim_) { UseDevice(true); }
 
    /** @brief Copy constructor. The QuadratureSpace ownership flag, #own_qspace,
@@ -88,7 +88,7 @@ public:
 
    /// Set the vector dimension, updating the size by calling Vector::SetSize().
    void SetVDim(int vdim_)
-   { vdim = vdim_; SetSize(vdim*qspace->GetSize()); }
+   { vdim = vdim_; SetSize((int64_t)vdim*qspace->GetSize()); }
 
    /// Get the associated QuadratureSpaceBase object.
    QuadratureSpaceBase *GetSpace() { return qspace; }

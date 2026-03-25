@@ -1124,7 +1124,7 @@ real_t Vector::operator*(const Vector &v) const
          const int tid = omp_get_thread_num();
          const int stride = (size + nt - 1) / nt;
          const int start = tid * stride;
-         const int stop = std::min(start + stride, size);
+         const int stop = std::min(start + stride, (int)size);
          real_t my_dot = 0.0;
          for (int i = start; i < stop; i++)
          {

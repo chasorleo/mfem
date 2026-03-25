@@ -160,7 +160,11 @@ static void EADiffusionAssemble3D(const int NE,
    MFEM_VERIFY(Q1D <= DeviceDofQuadLimits::Get().MAX_Q1D, "");
    auto B = Reshape(b.Read(), Q1D, D1D);
    auto G = Reshape(g.Read(), Q1D, D1D);
-   auto D = Reshape(padata.Read(), Q1D, Q1D, Q1D, 6, NE);
+   // Determine symmetric (6) vs non-symmetric (9) from pa_data size
+   const int pa_size = padata.Size() / (Q1D * Q1D * Q1D * NE);
+   MFEM_VERIFY(pa_size == 6 || pa_size == 9,
+               "Unexpected pa_size=" << pa_size);
+   auto D = Reshape(padata.Read(), Q1D, Q1D, Q1D, pa_size, NE);
    auto A = Reshape(eadata.ReadWrite(), D1D, D1D, D1D, D1D, D1D, D1D, NE);
    mfem::forall_3D(NE, D1D, D1D, D1D, [=] MFEM_HOST_DEVICE (int e)
    {
@@ -204,15 +208,28 @@ static void EADiffusionAssemble3D(const int NE,
                                  real_t bbgj = r_G[k1][j1] * r_B[k2][j2] * r_B[k3][j3];
                                  real_t bgbj = r_B[k1][j1] * r_G[k2][j2] * r_B[k3][j3];
                                  real_t gbbj = r_B[k1][j1] * r_B[k2][j2] * r_G[k3][j3];
-                                 real_t D00 = D(k1,k2,k3,0,e);
-                                 real_t D10 = D(k1,k2,k3,1,e);
-                                 real_t D20 = D(k1,k2,k3,2,e);
-                                 real_t D01 = D10;
-                                 real_t D11 = D(k1,k2,k3,3,e);
-                                 real_t D21 = D(k1,k2,k3,4,e);
-                                 real_t D02 = D20;
-                                 real_t D12 = D21;
-                                 real_t D22 = D(k1,k2,k3,5,e);
+                                 real_t D00, D10, D20, D01, D11, D21, D02, D12, D22;
+                                 if (pa_size == 6) {
+                                    D00 = D(k1,k2,k3,0,e);
+                                    D10 = D(k1,k2,k3,1,e);
+                                    D20 = D(k1,k2,k3,2,e);
+                                    D01 = D10;
+                                    D11 = D(k1,k2,k3,3,e);
+                                    D21 = D(k1,k2,k3,4,e);
+                                    D02 = D20;
+                                    D12 = D21;
+                                    D22 = D(k1,k2,k3,5,e);
+                                 } else { // pa_size == 9
+                                    D00 = D(k1,k2,k3,0,e);
+                                    D10 = D(k1,k2,k3,1,e);
+                                    D20 = D(k1,k2,k3,2,e);
+                                    D01 = D(k1,k2,k3,3,e);
+                                    D11 = D(k1,k2,k3,4,e);
+                                    D21 = D(k1,k2,k3,5,e);
+                                    D02 = D(k1,k2,k3,6,e);
+                                    D12 = D(k1,k2,k3,7,e);
+                                    D22 = D(k1,k2,k3,8,e);
+                                 }
                                  val += bbgi * D00 * bbgj
                                         + bgbi * D10 * bbgj
                                         + gbbi * D20 * bbgj
